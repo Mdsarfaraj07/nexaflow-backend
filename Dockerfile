@@ -4,7 +4,7 @@
 # ==========================================
 
 # Stage 1: Build Backend (Spring Boot - Java)
-FROM maven:3.9-eclipse-temurin-17 AS backend-builder
+FROM maven:3.9-eclipse-temurin-17-jammy AS backend-builder
 WORKDIR /build/backend
 
 # Copy Maven files
@@ -16,7 +16,7 @@ RUN mvn clean package -DskipTests -q && \
     mv target/nexaflow-backend-*.jar app.jar
 
 # Stage 2: Runtime Environment
-FROM eclipse-temurin:17-jre-bullseye
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 

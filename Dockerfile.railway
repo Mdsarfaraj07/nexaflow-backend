@@ -4,7 +4,7 @@
 # Multi-stage build: Backend (Java) + Frontend (Node)
 
 # Stage 1: Build Backend (Spring Boot)
-FROM maven:3.9-eclipse-temurin-17 AS backend-builder
+FROM maven:3.9-eclipse-temurin-17-jammy AS backend-builder
 WORKDIR /backend
 COPY nexaflow-backend/pom.xml ./pom.xml
 COPY nexaflow-backend/src ./src
@@ -21,7 +21,7 @@ COPY nexaflow-v3-complete/package-lock.json* ./
 RUN npm ci --only=production
 
 # Stage 3: Runtime - Deploy on Railway (Backend Primary)
-FROM eclipse-temurin:17-jre-bullseye
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # Install Node.js for frontend in the same image
