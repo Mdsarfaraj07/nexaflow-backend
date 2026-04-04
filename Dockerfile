@@ -16,7 +16,7 @@ RUN mvn clean package -DskipTests -q && \
     mv target/nexaflow-backend-*.jar app.jar
 
 # Stage 2: Runtime Environment
-FROM eclipse-temurin:17-jre-bullseye
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
