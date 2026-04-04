@@ -1,103 +1,37 @@
 #!/bin/bash
 # NexaFlow Startup Script - Railway Deployment
-# Starts both Backend (Spring Boot) and Frontend (Node.js)
+# Starts the Spring Boot Backend on Railway
 
 set -e
 
 echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║      NexaFlow Startup - Production Environment                 ║"
+echo "║      NexaFlow Backend Startup - Production Environment         ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 
-# Color codes
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+# Default port
+PORT=${PORT:-8080}
+SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-production}
 
-# Function to log
-log() {
-  echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
-}
+echo "[$(date)] Starting NexaFlow Backend on port $PORT..."
+echo "[$(date)] Environment: $SPRING_PROFILES_ACTIVE"
 
-# Function to error
-error() {
-  echo -e "${YELLOW}[ERROR]${NC} $1"
-  exit 1
-}
-
-# Function to success
-success() {
-  echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-# ============================================
-# 1. VALIDATE ENVIRONMENT
-# ============================================
-log "Validating environment variables..."
-
-if [ -z "$SPRING_PROFILES_ACTIVE" ]; then
-  export SPRING_PROFILES_ACTIVE="production"
-fi
-
-if [ -z "$PORT" ]; then
-  export PORT=8080
-fi
-
-if [ -z "$NODE_ENV" ]; then
-  export NODE_ENV="production"
-fi
-
-if [ -z "$FRONTEND_PORT" ]; then
-  export FRONTEND_PORT=3000
-fi
-
-log "SPRING_PROFILES_ACTIVE: $SPRING_PROFILES_ACTIVE"
-log "BACKEND_PORT: $PORT"
-log "FRONTEND_PORT: $FRONTEND_PORT"
-log "NODE_ENV: $NODE_ENV"
-
-# ============================================
-# 2. CHECK DATABASE CONNECTION
-# ============================================
+# Wait for database if configured
 if [ ! -z "$DB_HOST" ]; then
-  log "Verifying database connection to $DB_HOST:${DB_PORT:-3306}..."
-  
-  # Wait for database to be ready (retry logic)
+  echo "[$(date)] Waiting for database..."
   for i in {1..30}; do
-    if nc -z $DB_HOST ${DB_PORT:-3306} 2>/dev/null; then
-      success "Database is ready!"
+    if timeout 2 bash -c "echo > /dev/tcp/$DB_HOST/${DB_PORT:-3306}" 2>/dev/null; then
+      echo "[$(date)] Database is ready!"
       break
     fi
-    if [ $i -eq 30 ]; then
-      error "Database not accessible after 30 attempts"
-    fi
-    log "Waiting for database... (attempt $i/30)"
+    echo "[$(date)] Waiting for database... (attempt $i/30)"
     sleep 2
   done
 fi
 
-# ============================================
-# 3. START FRONTEND SERVICE (Background)
-# ============================================
-if [ -d "./frontend" ]; then
-  log "Starting Frontend Server (Node.js)..."
-  
-  cd frontend
-  
-  # Create .env if it doesn't exist
-  if [ ! -f ".env" ]; then
-    cat > .env << EOF
-NODE_ENV=${NODE_ENV}
-PORT=${FRONTEND_PORT}
-BACKEND_URL=${BACKEND_URL:-http://localhost:8080}
-APP_URL=${APP_URL:-http://localhost:${FRONTEND_PORT}}
-JWT_SECRET=${JWT_SECRET}
-RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
-STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
-SMTP_HOST=${SMTP_HOST}
-SMTP_PORT=${SMTP_PORT}
-SMTP_USER=${SMTP_USER}
-SMTP_PASS=${SMTP_PASS}
+# Start backend
+cd /app/backend
+echo "[$(date)] Starting Spring Boot application..."
+exec java -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar app.jar
 ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 EOF
     log "Created .env file in frontend directory"
