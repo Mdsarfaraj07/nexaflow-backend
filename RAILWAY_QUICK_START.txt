@@ -1,0 +1,204 @@
+# Railway Setup Quick Reference
+
+## 🎯 Do This NOW - 15 Minutes Setup
+
+### ✅ BEFORE YOU START:
+- [ ] Go to https://railway.app/dashboard
+- [ ] Find your "nexaflow-backend" project
+- [ ] Have MySQL running (check Railway)
+
+---
+
+## 🚀 QUICK STEPS
+
+### STEP 1: Get Database URL (5 min)
+```
+Railway Dashboard
+├─ Click MySQL service
+├─ Go to [Connect] tab
+└─ Copy entire Database URL → Paste below:
+
+SPRING_DATASOURCE_URL: 
+_____________________________________________
+
+EXTRACT FROM IT:
+- username: root
+- password: [from the URL between : and @]
+- host: [from @ to :]
+- port: [number after :]
+- database: [after last /]
+```
+
+---
+
+### STEP 2: Set Database Variables (3 min)
+
+Go to: `nexaflow-backend` → `Variables` tab
+
+Copy-Paste each (replace values from Step 1):
+
+```
+SPRING_DATASOURCE_URL = [from step 1]
+SPRING_DATASOURCE_USERNAME = root
+SPRING_DATASOURCE_PASSWORD = [from step 1]
+SPRING_DATASOURCE_DRIVER_CLASS_NAME = com.mysql.cj.jdbc.Driver
+SPRING_JPA_HIBERNATE_DDL_AUTO = update
+SERVER_PORT = 8080
+JWT_SECRET = NexaFlow@SecureKey#Production2024#MyKey12345
+JWT_EXPIRATION_MS = 604800000
+```
+
+---
+
+### STEP 3: Set Email (3 min)
+
+**Choose ONE:**
+
+#### A) BREVO (RECOMMENDED)
+1. Sign up: https://www.brevo.com
+2. Settings → SMTP & API
+3. Copy SMTP Password & API Key
+
+Copy-Paste:
+```
+SPRING_MAIL_HOST = smtp-relay.brevo.com
+SPRING_MAIL_PORT = 587
+SPRING_MAIL_USERNAME = mdsarfaraj9886@gmail.com
+SPRING_MAIL_PASSWORD = [BREVO SMTP KEY]
+MAIL_FROM_EMAIL = noreply@nexaflow.in
+MAIL_FROM_NAME = NexaFlow
+BREVO_API_KEY = [BREVO API KEY]
+SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH = true
+SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE = true
+```
+
+#### B) GMAIL
+1. Get App Password: https://myaccount.google.com/apppasswords
+2. Select: Mail & Windows
+3. Copy 16-char password
+
+Copy-Paste:
+```
+SPRING_MAIL_HOST = smtp.gmail.com
+SPRING_MAIL_PORT = 587
+SPRING_MAIL_USERNAME = mdsarfaraj9886@gmail.com
+SPRING_MAIL_PASSWORD = [16-CHAR GMAIL APP PASSWORD]
+MAIL_FROM_EMAIL = mdsarfaraj9886@gmail.com
+MAIL_FROM_NAME = NexaFlow
+SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH = true
+SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE = true
+```
+
+---
+
+### STEP 4: CORS (1 min)
+```
+ALLOWED_ORIGINS = *
+```
+
+---
+
+### STEP 5: Deploy (2 min)
+1. Click [Deploy] button
+2. Wait for "Started NexaFlowApplication"
+3. Check [Logs] tab
+
+---
+
+## ✅ VERIFY IT WORKS (3 min)
+
+### Test 1: Health Check
+```
+Open: https://nexaflow-xxxx.railway.app/api/auth/health
+See: {"status":"OK"}
+```
+
+### Test 2: Login
+```
+URL: https://nexaflow-xxxx.railway.app
+Email: admin@nexaflow.in
+Password: Admin@123
+```
+
+### Test 3: Dashboard
+```
+Should load without errors
+Check for any error messages in console (F12)
+```
+
+---
+
+## 🆘 QUICK FIXES
+
+### Database Connection Error
+```
+☐ Copy SPRING_DATASOURCE_URL again - exactly!
+☐ Check credentials in URL are correct
+☐ MySQL service running? (Railway dashboard)
+☐ Redeploy after fixing
+```
+
+### Email Not Sending
+```
+☐ Check SMTP password (not API key) in SPRING_MAIL_PASSWORD
+☐ Check email & password are correct
+☐ Check SMTPS settings enabled
+☐ Test with Brevo instead of Gmail
+```
+
+### 404 Errors
+```
+☐ Check URL format: https://nexaflow-xxxx.railway.app
+☐ Check endpoint: /api/auth/health
+☐ Check for typos in ALLOWED_ORIGINS
+```
+
+---
+
+## 📋 FINAL CHECKLIST
+
+Database:
+- [ ] MySQL running
+- [ ] Database URL copied
+- [ ] All 5 database variables set
+- [ ] Can see tables in logs
+
+Email:
+- [ ] Brevo or Gmail account created
+- [ ] API/App password copied
+- [ ] 8 email variables set
+- [ ] SMTP host correct
+
+Application:
+- [ ] JWT_SECRET set
+- [ ] SERVER_PORT = 8080
+- [ ] ALLOWED_ORIGINS set
+- [ ] [DEPLOY] button clicked
+
+Verification:
+- [ ] Logs show "Started NexaFlowApplication"
+- [ ] Health check returns OK
+- [ ] Can login with admin credentials
+- [ ] Dashboard loads
+
+---
+
+## 🎉 YOU'RE DONE!
+
+Your app is live at:
+```
+https://nexaflow-xxxx.railway.app
+```
+
+Login: admin@nexaflow.in / Admin@123
+
+---
+
+## 📞 HELP
+
+1. Check Railway Logs → Find error message
+2. Google the error message
+3. Check: RAILWAY_COMPLETE_SETUP.md (detailed guide)
+4. Contact: Railway Support https://railway.app/support
+
+**Estimated time: 15-20 minutes**

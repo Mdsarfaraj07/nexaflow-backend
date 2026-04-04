@@ -1,0 +1,47 @@
+# ==========================================
+# NexaFlow Production Dockerfile for Railway
+# ==========================================
+# Multi-stage build: Backend (Java) + Frontend (Node)
+
+# Stage 1: Build Backend (Spring Boot)
+FROM openjdk:17-slim AS backend-builder
+WORKDIR /backend
+COPY nexaflow-backend/pom.xml ./pom.xml
+COPY nexaflow-backend/src ./src
+
+RUN apt-get update && apt-get install -y maven && maven clean package -DskipTests
+RUN mv target/*.jar app.jar
+
+# Stage 2: Build Frontend (Node.js)
+FROM node:18-alpine AS frontend-builder
+WORKDIR /frontend
+COPY nexaflow-v3-complete/package.json ./package.json
+COPY nexaflow-v3-complete/package-lock.json* ./
+
+RUN npm ci --only=production
+
+# Stage 3: Runtime - Deploy on Railway (Backend Primary)
+FROM openjdk:17-slim
+WORKDIR /app
+
+# Install Node.js for frontend in the same image
+RUN apt-get update && apt-get install -y nodejs npm curl && rm -rf /var/lib/apt/lists/*
+
+# Copy Backend JAR from builder
+COPY --from=backend-builder /backend/app.jar ./backend/app.jar
+
+# Copy Frontend Node modules and assets
+COPY --from=frontend-builder /frontend/node_modules ./frontend/node_modules
+COPY nexaflow-v3-complete/public ./frontend/public
+COPY nexaflow-v3-complete/.env.production ./frontend/.env
+COPY nexaflow-v3-complete/server.js ./frontend/server.js
+
+# Health check for Railway monitoring
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:8080/api/auth/health || exit 1
+
+# Expose ports (Railway will assign PORT env var)
+EXPOSE 8080 3000
+
+# Start both services
+CMD sh -c 'cd frontend && nohup npm start > /tmp/frontend.log 2>&1 & java -jar backend/app.jar'

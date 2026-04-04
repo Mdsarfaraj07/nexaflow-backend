@@ -1,0 +1,92 @@
+# Railway Environment Variables Template
+# Copy these to Railway Dashboard → Variables
+
+# ============================================
+# DATABASE CONFIGURATION (MySQL on Railway)
+# ============================================
+DB_HOST=mysql-db
+DB_PORT=3306
+DB_NAME=nexaflow_db
+DB_USER=nexaflow
+DB_PASS=GenerateSecurePassword123!
+DB_ROOT_PASSWORD=GenerateRootPassword123!
+DB_POOL_SIZE=20
+
+# ============================================
+# BACKEND CONFIGURATION
+# ============================================
+SPRING_PROFILES_ACTIVE=railway
+PORT=8080
+JAR_FILE=target/nexaflow-backend-3.0.0.jar
+
+# JWT & Security
+# IMPORTANT: Generate a strong 32+ character random string
+JWT_SECRET=GenerateA32CharRandomStringHere123456789ABCDEF
+JWT_EXPIRATION=604800000
+
+# CORS Configuration
+CORS_ALLOWED_ORIGINS=https://your-domain.railway.app,https://your-custom-domain.com
+
+# ============================================
+# EMAIL CONFIGURATION (Brevo SMTP)
+# ============================================
+MAIL_HOST=smtp-relay.brevo.com
+MAIL_PORT=587
+MAIL_USERNAME=your-brevo-email@example.com
+MAIL_PASSWORD=your_brevo_smtp_access_key
+MAIL_FROM=noreply@nexaflow.com
+MAIL_NAME=NexaFlow
+
+# Exchange Rate Configuration
+DEFAULT_USD_TO_INR=83.5
+EXCHANGE_RATE_API_URL=https://api.exchangerate-api.com/v4/latest/USD
+
+# ============================================
+# PAYMENT GATEWAY CONFIGURATION
+# ============================================
+
+# Razorpay (India Payments) - Optional
+RAZORPAY_KEY_ID=rzp_live_xxxxxxxxxxxxx
+RAZORPAY_KEY_SECRET=your_razorpay_secret_key_here
+
+# Stripe (International Payments) - Optional
+STRIPE_SECRET_KEY=sk_live_xxxxxxxxxxxxx
+STRIPE_PUBLISHABLE_KEY=pk_live_xxxxxxxxxxxxx
+
+# ============================================
+# FRONTEND CONFIGURATION
+# ============================================
+NODE_ENV=production
+FRONTEND_PORT=3000
+BACKEND_URL=https://your-app.railway.app
+APP_URL=https://your-app.railway.app
+
+# Frontend Payment Gateway Keys (if needed)
+STRIPE_PUBLIC_KEY=pk_live_xxxxxxxxxxxxx
+RAZORPAY_KEY=rzp_live_xxxxxxxxxxxxx
+ANTHROPIC_API_KEY=sk_xxxxx (optional for AI features)
+
+# ============================================
+# LOGGING & MONITORING
+# ============================================
+LOG_LEVEL=INFO
+NODE_ENV=production
+
+# ============================================
+# OPTIONAL: Domain & SSL
+# ============================================
+# Railway provides auto SSL certificate
+# Add custom domain in Railway Dashboard → Settings → Custom Domain
+CUSTOM_DOMAIN=nexaflow.yourdomain.com
+
+# ============================================
+# INSTRUCTIONS
+# ============================================
+# 1. Replace all placeholder values (xxxxx) with actual credentials
+# 2. Generate strong random passwords and JWT secrets
+# 3. Get credentials from respective service providers:
+#    - Brevo: https://www.brevo.com (SMTP credentials)
+#    - Razorpay: https://dashboard.razorpay.com (API Keys)
+#    - Stripe: https://dashboard.stripe.com (API Keys)
+# 4. Copy-paste all variables into Railway Dashboard
+# 5. Click "Deploy" to apply changes

@@ -1,0 +1,138 @@
+# Git Ignore File for NexaFlow
+# Prevents sensitive and build files from being committed to GitHub
+
+# ============================================
+# Build & Compilation Output
+# ============================================
+target/
+build/
+dist/
+*.jar
+*.war
+*.ear
+*.class
+*.o
+*.pyc
+
+# ============================================
+# IDE & Editor Files
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.classpath
+.c9/
+*.code-workspace
+.prettierrc
+
+# ============================================
+# Package Manager
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+package-lock.json
+pnpm-lock.yaml
+
+# ============================================
+# Environment & Credentials (CRITICAL!)
+# ============================================
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+*.pem
+*.key
+*.cert
+*.p12
+secrets.properties
+credentials.json
+
+# ============================================
+# Database Files
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+data/
+*.sql
+migration/
+
+# ============================================
+# Logs & Temporary Files
+# ============================================
+logs/
+*.log
+tmp/
+temp/
+*.tmp
+
+# ============================================
+# OS Files
+# ============================================
+.DS_Store
+Thumbs.db
+.directory
+
+# ============================================
+# Docker & Container
+# ============================================
+.docker/
+.dockerignore
+
+# ============================================
+# Testing
+# ============================================
+coverage/
+.nyc_output/
+test-results/
+
+# ============================================
+# macOS
+# ============================================
+.AppleDouble
+.LSOverride
+._*
+
+# ============================================
+# Linux
+# ============================================
+.~
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+
+# ============================================
+# Gradle (if using)
+# ============================================
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# ============================================
+# IDE Specific
+# ============================================
+.vscode/
+.settings/
+.metadata/
+.factorypath
+
+# ============================================
+# Custom NexaFlow Specific
+# ============================================
+upload/
+files/
+public/uploads/
+data/db.json
+data/backups/
+nexaflow.log

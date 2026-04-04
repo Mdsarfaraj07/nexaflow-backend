@@ -1,0 +1,7 @@
+node_modules/
+.git/
+target/
+*.log
+.env.local
+.env.*.local
+nexaflow-backend/target/

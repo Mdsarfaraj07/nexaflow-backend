@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  # ═══════════════════════════════════════════════════════════════════
+  #  MySQL Database
+  # ═══════════════════════════════════════════════════════════════════
+  mysql:
+    image: mysql:8.0-alpine
+    container_name: nexaflow-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-nexaflow_db}
+      MYSQL_USER: ${DB_USER:-nexaflow}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-nexaflow_secure_pass_123}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secure_pass_123}
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    network_mode: host
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Spring Boot Backend
+  # ═══════════════════════════════════════════════════════════════════
+  backend:
+    build:
+      context: ./nexaflow-backend
+      dockerfile: Dockerfile
+    container_name: nexaflow-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: production
+      
+      # Database Configuration
+      DB_HOST: localhost
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-nexaflow_db}
+      DB_USER: ${DB_USER:-nexaflow}
+      DB_PASSWORD: ${DB_PASSWORD:-nexaflow_secure_pass_123}
+      
+      # Security
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_minimum_32_characters_CHANGE_THIS}
+      
+      # CORS
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8080,https://yourdomain.com}
+      
+      # Payment Gateways
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
+      STRIPE_API_KEY: ${STRIPE_API_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      
+      # Email Configuration
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-noreply@yourdomain.com}
+      
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    network_mode: host
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      timeout: 10s
+      retries: 5
+      interval: 30s
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Frontend (Node.js)
+  # ═══════════════════════════════════════════════════════════════════
+  frontend:
+    build:
+      context: ./nexaflow-v3-complete
+      dockerfile: Dockerfile
+    container_name: nexaflow-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+      BACKEND_URL: ${BACKEND_URL:-http://localhost:8080}
+      APP_URL: ${APP_URL:-https://yourdomain.com}
+      
+      # Security & API Keys (use .env file)
+      JWT_SECRET: ${JWT_SECRET:-}
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    depends_on:
+      - backend
+    network_mode: host
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      timeout: 10s
+      retries: 5
+      interval: 30s
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  nexaflow-network:
+    driver: bridge
