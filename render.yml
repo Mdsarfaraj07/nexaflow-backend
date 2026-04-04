@@ -10,12 +10,12 @@ services:
         value: production
       - key: PORT
         value: "8080"
-      - key: DATABASE_URL
-        sync: false
       - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
         sync: false
       - key: SPRING_DATASOURCE_USERNAME
-        value: postgres
+        value: ${DATABASE_USER}
+        sync: false
       - key: SPRING_DATASOURCE_PASSWORD
         sync: false
       - key: JWT_SECRET
@@ -24,6 +24,16 @@ services:
         value: https://nexaflow-frontend.onrender.com,https://yourdomain.com
       - key: APP_URL
         value: https://nexaflow-backend.onrender.com
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        value: nexaflow_db
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
 
   - type: web
     name: nexaflow-frontend

@@ -32,22 +32,6 @@ fi
 cd /app/backend
 echo "[$(date)] Starting Spring Boot application..."
 exec java -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar app.jar
-ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-EOF
-    log "Created .env file in frontend directory"
-  fi
-  
-  # Start frontend in background
-  nohup npm start > /tmp/frontend.log 2>&1 &
-  FRONTEND_PID=$!
-  success "Frontend started (PID: $FRONTEND_PID)"
-  
-  cd ..
-else
-  log "Frontend directory not found, skipping..."
-fi
-
-# ============================================
 # 4. START BACKEND SERVICE (Foreground)
 # ============================================
 if [ -d "./backend" ] && [ -f "./backend/app.jar" ]; then
