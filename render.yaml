@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: nexaflow-backend
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    healthCheckInterval: 300
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: PORT
+        value: "8080"
+      - key: DATABASE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        value: postgres
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://nexaflow-frontend.onrender.com,https://yourdomain.com
+      - key: APP_URL
+        value: https://nexaflow-backend.onrender.com
+
+  - type: web
+    name: nexaflow-frontend
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: cd nexaflow-v3-complete && npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: BACKEND_URL
+        value: https://nexaflow-backend.onrender.com
+      - key: API_BASE_URL
+        value: https://nexaflow-backend.onrender.com/api
+
+  - type: pserv
+    name: nexaflow-postgres
+    plan: free
+    runtime: postgres15
+    ipAllowList: []
