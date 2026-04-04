@@ -26,7 +26,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Backend JAR from builder
-COPY --from=backend-builder /build/backend/app.jar ./app.jar
+RUN mkdir -p /app/backend
+COPY --from=backend-builder /build/backend/app.jar ./backend/app.jar
 
 # Copy startup script
 COPY start-services.sh /app/start.sh
