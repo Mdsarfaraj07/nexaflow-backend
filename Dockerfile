@@ -28,7 +28,7 @@ RUN npm ci --only=production && \
     npm cache clean --force
 
 # Stage 3: Runtime Environment
-FROM openjdk:17-slim as runtime
+FROM eclipse-temurin:17-jdk-slim as runtime
 
 WORKDIR /app
 
@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
     curl \
-    netcat \
+    netcat-traditional \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Backend JAR from builder
